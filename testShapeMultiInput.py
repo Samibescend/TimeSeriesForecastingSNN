@@ -21,7 +21,7 @@ min = 0
 network = forceNetworkMulti(dt=1)  # Instantiates network.
 
 X = nodes.Input(30, traces=True)  # Input layer.
-Y = nodes.LIFNodes(500, traces=True,  tc_decay = 100, tc_trace = 5)  # Layer of LIF neurons.
+Y = nodes.LIFNodes(500, traces=True,  tc_decay = 100, tc_trace = 5)  # Layer of LIF neurons. 
 Z = nodes.LIFNodes(200)  # Layer of LIF neurons.
 F = nodes.Input(k * 30,  traces=True)  # Input layer.
 

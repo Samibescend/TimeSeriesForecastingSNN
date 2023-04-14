@@ -21,8 +21,8 @@ min = 0
 network = forceNetworkMulti(dt=1)  # Instantiates network.
 
 X = nodes.Input(30, traces=True)  # Input layer.
-Y = nodes.LIFNodes(500, traces=True,  tc_decay = 100, tc_trace = 5)  # Layer of LIF neurons. 
-Z = nodes.LIFNodes(200)  # Layer of LIF neurons.
+Y = nodes.LIFNodes(12000, traces=True,  tc_decay = 100, tc_trace = 5)  # Layer of LIF neurons. 
+Z = nodes.LIFNodes(9800)  # Layer of LIF neurons.
 F = nodes.Input(k * 30,  traces=True)  # Input layer.
 
 
@@ -38,9 +38,9 @@ C6 = topology.Connection(source=F, target=Y, w=wFeed)  # Connection from X to Y.
 tabTensor = torch.full((Y.n, Y.n), 0.01)
 
 C2 = topology.Connection(source=Y, target=Y, w=torch.bernoulli(tabTensor)* torch.rand((Y.n, Y.n)))  # Connection from X to Y.
-tabTensor = torch.full((Y.n, Z.n), 0.1)
+tabTensor = torch.full((Y.n, Z.n), 0.01)
 C3 = topology.Connection(source=Y, target=Z, w=torch.bernoulli(tabTensor)* torch.rand((Y.n, Z.n)))
-tabTensor = torch.full((Z.n, Y.n), 0.1)
+tabTensor = torch.full((Z.n, Y.n), 0.01)
 C4 = topology.Connection(source=Z, target=Y, w= -torch.bernoulli(tabTensor) * torch.rand((Z.n, Y.n))) 
 tabTensor = torch.full((Z.n, Z.n), 0.01)
 C5 = topology.Connection(source=Z, target=Z, w= -  torch.bernoulli(tabTensor) * torch.rand((Z.n, Z.n)))  # Connection from X to Y.
@@ -138,8 +138,3 @@ for i, layer in enumerate(spikes):
 plt.tight_layout()
 plt.savefig("shapeTest.jpg")
 
-t = np.arange(0.0, time, 1)
-s = decoDataset[0][:time]
-fig, ax = plt.subplots()
-ax.plot(t, s)
-fig.savefig("plotDeco.png")

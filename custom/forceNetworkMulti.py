@@ -28,6 +28,12 @@ def encodingOneValue(data, ymax, ymin, m, sca):
                 spikes.append(0)    
     return spikes
 
+def MSECalculation(deco, pred):
+    total = 0
+    for i in range(len(pred)):
+        total += (pred[i] - deco[i]) ** 2
+    return(total/len(deco))
+
 class forceNetworkMulti(Network):
     
 
@@ -267,4 +273,16 @@ class forceNetworkMulti(Network):
         ax.plot(t, s)
         fig.savefig("plotPred.png")
 
-    
+        t = np.arange(0.0, time, 1)
+        s = decoData[:time]
+        fig, ax = plt.subplots()
+        ax.plot(t, s)
+        fig.savefig("plotDeco.png")
+        
+        s = torch.nn.functional.normalize(torch.Tensor(plotValues), p=2, dim = 0)
+        s2 = torch.nn.functional.normalize(torch.Tensor(decoData[:time]), p=2, dim = 0)
+        fig, ax = plt.subplots()
+        ax.plot(t, s2)
+        ax.plot(t, s)
+        fig.savefig("plotNormComparison.png")
+        print("MSE DE FIN= " + str(MSECalculation(s2, s)))

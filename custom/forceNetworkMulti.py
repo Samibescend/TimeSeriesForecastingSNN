@@ -55,6 +55,7 @@ class forceNetworkMulti(Network):
         min = kwargs.get("min", {})
         max = kwargs.get("max", {})
         k = kwargs.get("k",  {})
+        nbInput = kwargs.get("nbInput", {})
         print(k)
         plotValues = []
 
@@ -65,7 +66,7 @@ class forceNetworkMulti(Network):
         eta = 0.2
         maxWOut = max/(0.1*nbNeur)
         minWOut = min/(0.1*nbNeur)
-        traceDecay = 5
+        traceDecay = 4
         wOut = torch.ones(nbNeur) 
         #print(inputs["F"])
          
@@ -223,7 +224,6 @@ class forceNetworkMulti(Network):
                     else: 
                         traces[t][i] = np.exp((-1 *((t - baseTrace[i])) / traceDecay))
                         if s.item() == True:
-                            print("incr")
                             baseTrace[i] = t
                             traces[t][i] = traces[t][i]  + incr
                             #traces[t][i] =  incr
@@ -245,24 +245,24 @@ class forceNetworkMulti(Network):
             error = float((decoData[t] - pred ))#torch.mean(wOut)
             totalError += (error ** 2)
             tmpT += 1
-            print("Prévision = " + str(pred)) 
-            print("MSE = " + str(error ** 2))
-            print("Value = " + str(decoData[t]))
-            print("Moyenne Error = " + str(totalError/(tmpT)))
+            #print("Prévision = " + str(pred)) 
+            #print("MSE = " + str(error ** 2))
+            #print("Value = " + str(decoData[t]))
+            #print("Moyenne Error = " + str(totalError/(tmpT)))
             #print(traces[t])
             if t != 0:
                wOut = wOut - error *  QT @ torch.t(torch.Tensor(traces[t]))
             if t % 1000 == 0:
                 totalError = 0
                 tmpT = 0
-            print(inputs["F"].shape)
+            #print(inputs["F"].shape)
             for i in range(k):
                 if t - i < 0:
-                    tmp = torch.zeros(30)
+                    tmp = torch.zeros(nbInput)
                 else:
-                    tmp = torch.Tensor(encodingOneValue(decoData[t-i], max, min, 30, 1))
-                for j in range(30):
-                    inputs["F"][t][0][j + i * 30] = tmp[j]
+                    tmp = torch.Tensor(encodingOneValue(decoData[t-i], max, min, nbInput, 1))
+                for j in range(nbInput):
+                    inputs["F"][t][0][j + i * nbInput] = tmp[j]
 
         # Re-normalize connections.
         for c in self.connections:
@@ -279,8 +279,12 @@ class forceNetworkMulti(Network):
         ax.plot(t, s)
         fig.savefig("plotDeco.png")
         
-        s = torch.nn.functional.normalize(torch.Tensor(plotValues), p=2, dim = 0)
-        s2 = torch.nn.functional.normalize(torch.Tensor(decoData[:time]), p=2, dim = 0)
+        norm = np.linalg.norm(plotValues)
+        norm2 = np.linalg.norm(decoData[:time])
+        s = plotValues/norm
+        s2 = decoData[:time]/norm2
+        #s = torch.nn.functional.normalize(torch.Tensor(plotValues), p=2, dim = 0)
+        #s2 = torch.nn.functional.normalize(torch.Tensor(decoData[:time]), p=2, dim = 0)
         fig, ax = plt.subplots()
         ax.plot(t, s2)
         ax.plot(t, s)

@@ -14,16 +14,18 @@ import pickle
 mfFeed = 2
 mfInp = 0.5
 k = 10
-time = 500
+time = 251
+nbInput = 30
+
 max = 2
 min = 0
 
 network = forceNetworkMulti(dt=1)  # Instantiates network.
 
-X = nodes.Input(30, traces=True)  # Input layer.
-Y = nodes.LIFNodes(12000, traces=True,  tc_decay = 100, tc_trace = 5)  # Layer of LIF neurons. 
-Z = nodes.LIFNodes(9800)  # Layer of LIF neurons.
-F = nodes.Input(k * 30,  traces=True)  # Input layer.
+X = nodes.Input(nbInput, traces=True)  # Input layer.
+Y = nodes.LIFNodes(6000, traces=True,  tc_decay = 100, tc_trace = 5)  # Layer of LIF neurons. 
+Z = nodes.LIFNodes(4800)  # Layer of LIF neurons.
+F = nodes.Input(k * nbInput,  traces=True)  # Input layer.
 
 
 tabTensor = torch.full((X.n, Y.n), 0.01)
@@ -38,9 +40,9 @@ C6 = topology.Connection(source=F, target=Y, w=wFeed)  # Connection from X to Y.
 tabTensor = torch.full((Y.n, Y.n), 0.01)
 
 C2 = topology.Connection(source=Y, target=Y, w=torch.bernoulli(tabTensor)* torch.rand((Y.n, Y.n)))  # Connection from X to Y.
-tabTensor = torch.full((Y.n, Z.n), 0.01)
+tabTensor = torch.full((Y.n, Z.n), 0.1)
 C3 = topology.Connection(source=Y, target=Z, w=torch.bernoulli(tabTensor)* torch.rand((Y.n, Z.n)))
-tabTensor = torch.full((Z.n, Y.n), 0.01)
+tabTensor = torch.full((Z.n, Y.n), 0.2)
 C4 = topology.Connection(source=Z, target=Y, w= -torch.bernoulli(tabTensor) * torch.rand((Z.n, Y.n))) 
 tabTensor = torch.full((Z.n, Z.n), 0.01)
 C5 = topology.Connection(source=Z, target=Z, w= -  torch.bernoulli(tabTensor) * torch.rand((Z.n, Z.n)))  # Connection from X to Y.
@@ -97,11 +99,11 @@ for i in range(time):
 data = torch.Tensor(data)
 print(len(data))
 
-void = torch.zeros(time , k*30)
+void = torch.zeros(time , k*nbInput)
 print(void.shape)
 # Simulate network on generated spike trains.
 inputs = {'X' : data, 'F' : void}  # Create inputs mapping.
-network.run(inputs=inputs, time=time, progress_bar = True, deco = decoDataset[0], min = min, max = max, k = k)  # Run network simulation.
+network.run(inputs=inputs, time=time, progress_bar = True, deco = decoDataset[0], min = min, max = max, k = k, nbInput = nbInput)  # Run network simulation.
 # Plot spikes of input and output layers.
 spikes = {'X' : M1.get('s'), 'Y' : M2.get('s'), 'Z' : M4.get('s')}
 spikesY = spikes['Y']

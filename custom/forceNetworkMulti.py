@@ -34,6 +34,20 @@ def MSECalculation(deco, pred):
         total += (pred[i] - deco[i]) ** 2
     return(total/len(deco))
 
+def R2Calculation(deco, pred):
+    totalError = 0
+    totalMoyenne = 0
+    totalMoyenneError = 0
+    for i in range(len(pred)):
+        totalError += (deco[i] - pred[i]) ** 2
+        totalMoyenne += deco[i]
+    totalMoyenne /= len(deco)
+
+    for i in range(len(pred)):
+        totalMoyenneError += (deco[i] - totalMoyenne) ** 2
+    
+    return(1 - (totalError/totalMoyenneError))
+
 class forceNetworkMulti(Network):
     
 
@@ -64,9 +78,10 @@ class forceNetworkMulti(Network):
         tmpT = 0 #Pour le calcul de la moyenne des errors
         incr = 0.5
         eta = 0.2
+        R2TotalPred = 0
         maxWOut = max/(0.1*nbNeur)
         minWOut = min/(0.1*nbNeur)
-        traceDecay = 4
+        traceDecay = 5
         wOut = torch.ones(nbNeur) 
         #print(inputs["F"])
          
@@ -225,7 +240,7 @@ class forceNetworkMulti(Network):
                         traces[t][i] = np.exp((-1 *((t - baseTrace[i])) / traceDecay))
                         if s.item() == True:
                             baseTrace[i] = t
-                            traces[t][i] = traces[t][i]  + incr
+                            traces[t][i] = incr
                             #traces[t][i] =  incr
                     i += 1
                 # print(traces[t])
@@ -244,6 +259,7 @@ class forceNetworkMulti(Network):
               
             error = float((decoData[t] - pred ))#torch.mean(wOut)
             totalError += (error ** 2)
+            R2TotalPred += error ** 2
             tmpT += 1
             #print("Prévision = " + str(pred)) 
             #print("MSE = " + str(error ** 2))
@@ -267,6 +283,7 @@ class forceNetworkMulti(Network):
         # Re-normalize connections.
         for c in self.connections:
             self.connections[c].normalize()
+        print("fin")
         t = np.arange(0.0, time, 1)
         s = plotValues
         fig, ax = plt.subplots()
@@ -290,3 +307,5 @@ class forceNetworkMulti(Network):
         ax.plot(t, s)
         fig.savefig("plotNormComparison.png")
         print("MSE DE FIN= " + str(MSECalculation(s2, s)))
+        print("R2 DE FIN = " + str(R2Calculation(s2, s)) )
+

@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 from statistics import NormalDist
 #with open("./datasets/formatedStocks.pickle", "rb") as f:
-with open("./datasets/formatedMackey.pickle", "rb") as f:
+with open("./datasets/formatedMackey2.pickle", "rb") as f:
     dataset = pickle.load(f)
 
 def encoding(dataset, ymax, ymin, m, sca):
@@ -69,7 +69,9 @@ print(len(results[0]))
 with open("./datasets/gaussianEncodedStocks.pickle", "wb") as f:
     pickle.dump(results, f)
 """
-results = (encoding(dataset, 2, 0, 30, 1))
+
+nbInputs = 100
+results = (encoding(dataset, 2, 0, nbInputs, 1))
 print(len(results[0]))
-with open("./datasets/gaussianEncodedMackey.pickle", "wb") as f:
+with open("./datasets/gaussianEncodedMackey2.pickle", "wb") as f:
     pickle.dump(results, f)

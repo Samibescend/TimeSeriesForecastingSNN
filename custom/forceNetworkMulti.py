@@ -6,6 +6,8 @@ import random
 from statistics import NormalDist
 import numpy.random as random
 import matplotlib.pyplot as plt
+import plotly
+import plotly.graph_objs as go
 
 
 def encodingOneValue(data, ymax, ymin, m, sca):
@@ -38,8 +40,8 @@ def R2Calculation(deco, pred):
     totalError = 0
     totalMoyenne = 0
     totalMoyenneError = 0
-    for i in range(len(pred)):
-        totalError += (deco[i] - pred[i]) ** 2
+    for i in range(len(pred) - 15):
+        totalError += (deco[i] - pred[i + 15]) ** 2
         totalMoyenne += deco[i]
     totalMoyenne /= len(deco)
 
@@ -233,7 +235,7 @@ class forceNetworkMulti(Network):
                         traces[t][i] = 0
                         if s.item() == True:
                             baseTrace[i] = t
-                            traces[t][i] = traces[t][i]  + incr
+                            traces[t][i] =  incr
                             #traces[t][i] =  incr
 
                     else: 
@@ -306,6 +308,22 @@ class forceNetworkMulti(Network):
         ax.plot(t, s2)
         ax.plot(t, s)
         fig.savefig("plotNormComparison.png")
+
+        trace = go.Scatter(
+            x = t ,
+            y = s,
+        )
+
+        trace2 = go.Scatter(
+            x = t ,
+            y = s2,
+            line = go.Line(
+            color = "red"
+            )
+        )
+        data = go.Data([trace, trace2])
+        plotly.offline.plot(data, filename='./test.html')
+
         print("MSE DE FIN= " + str(MSECalculation(s2, s)))
         print("R2 DE FIN = " + str(R2Calculation(s2, s)) )
 

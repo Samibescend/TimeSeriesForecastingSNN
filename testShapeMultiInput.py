@@ -11,10 +11,10 @@ import pickle
 
 
 #Parameters
-mfFeed = 4
-mfInp = 1
+mfFeed = 2
+mfInp = 0.5
 k = 15
-time = 1000
+time = 3000
 nbInput = 100
 
 max = 2
@@ -82,10 +82,10 @@ network.add_monitor(monitor=M4, name='Z')
 # Create Poisson-distributed spike train inputs.
 #data = 15 * torch.rand(30)  # Generate random Poisson rates for 100 input neurons.
 #train = encoding.poisson(datum=data, time=251)  # Encode input as 5000ms Poisson spike trains.
-with open("./datasets/gaussianEncodedMackey2.pickle", "rb") as f:
+with open("./datasets/gaussianEncodedMackey.pickle", "rb") as f:
     dataset = pickle.load(f)
 
-with open("./datasets/formatedMackey2.pickle", "rb") as f:
+with open("./datasets/formatedMackey.pickle", "rb") as f:
     decoDataset = pickle.load(f)
 
 enco = torch.Tensor(dataset[0])

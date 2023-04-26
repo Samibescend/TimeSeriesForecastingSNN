@@ -69,7 +69,9 @@ print(len(results[0]))
 with open("./datasets/gaussianEncodedStocks.pickle", "wb") as f:
     pickle.dump(results, f)
 """
-results = (encoding(dataset, 2, 0, 30, 1))
+
+nbInputs = 100
+results = (encoding(dataset, 2, 0, nbInputs, 1))
 print(len(results[0]))
 with open("./datasets/gaussianEncodedMackey.pickle", "wb") as f:
     pickle.dump(results, f)

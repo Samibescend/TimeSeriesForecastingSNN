@@ -31,7 +31,7 @@ C = topology.Connection(source=X, target=Y, w=torch.bernoulli(tabTensor) * torch
 tabTensor = torch.full((X.n, Y.n), 0.005)
 w=torch.bernoulli(tabTensor) * torch.rand((X.n, Y.n)) * mfFeed
 wFeed = torch.cat((w,w,w,w,w, w,w,w,w,w), 0)
-print(wFeed)
+print(wFeed.shape)
 C6 = topology.Connection(source=F, target=Y, w=wFeed)  # Connection from X to Y.
 
 

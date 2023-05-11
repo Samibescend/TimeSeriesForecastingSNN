@@ -75,11 +75,11 @@ class forceNetworkMulti(Network):
         print(k)
         plotValues = []
 
-        nbNeur = self.layers["Y"].n
-        traces = np.zeros((time, nbNeur))
+        nbNeur = self.layers["Y"].n #+ self.layers["Z"].n
+        traces = np.ones((time, nbNeur))
         tmpT = 0 #Pour le calcul de la moyenne des errors
-        incr = 0.5
-        eta = 0.2
+        incr = 1
+        eta = 0.05
         R2TotalPred = 0
         maxWOut = max/(0.1*nbNeur)
         minWOut = min/(0.1*nbNeur)
@@ -235,6 +235,21 @@ class forceNetworkMulti(Network):
                         traces[t][i] = 0
                         if s.item() == True:
                             baseTrace[i] = t
+                            traces[t][i] +=  incr
+                            #traces[t][i] =  incr
+
+                    else: 
+                        traces[t][i] = np.exp((-1 *((t - baseTrace[i])) / traceDecay))
+                        if s.item() == True:
+                            baseTrace[i] = t
+                            traces[t][i] += incr
+                            #traces[t][i] =  incr
+                    i += 1
+                """for s in self.monitors["Z"].recording["s"][t][0][0]:
+                    traces[t][i] = np.exp((-1 *((t - baseTrace[i])) / traceDecay))
+                    if baseTrace[i] == 1:
+                        if s.item() == True:
+                            baseTrace[i] = t
                             traces[t][i] =  incr
                             #traces[t][i] =  incr
 
@@ -242,9 +257,9 @@ class forceNetworkMulti(Network):
                         traces[t][i] = np.exp((-1 *((t - baseTrace[i])) / traceDecay))
                         if s.item() == True:
                             baseTrace[i] = t
-                            traces[t][i] = incr
+                            traces[t][i] = incr/4
                             #traces[t][i] =  incr
-                    i += 1
+                    i += 1"""
                 # print(traces[t])
 
             if t == 0:
@@ -318,7 +333,8 @@ class forceNetworkMulti(Network):
             x = t ,
             y = s2,
             line = go.Line(
-            color = "red"
+            color = "red",
+            dash = "dash"
             )
         )
         data = go.Data([trace, trace2])

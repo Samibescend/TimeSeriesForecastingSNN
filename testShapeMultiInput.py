@@ -11,10 +11,10 @@ import pickle
 
 
 #Parameters
-mfFeed = 2
-mfInp = 0.5
+mfFeed = 1
+mfInp = 2
 k = 15
-time = 1000
+time = 2000
 nbInput = 100
 
 max = 2
@@ -24,7 +24,7 @@ min = 0
 network = forceNetworkMulti(dt=1)  # Instantiates network.
 
 X = nodes.Input(nbInput, traces=True)  # Input layer.
-Y = nodes.LIFNodes(1000, traces=True,  tc_decay = 100, tc_trace = 5)  # Layer of LIF neurons. 
+Y = nodes.LIFNodes(2000, traces=True,  tc_decay = 100, tc_trace = 5)  # Layer of LIF neurons. 
 Z = nodes.LIFNodes(1200)  # Layer of LIF neurons.
 F = nodes.Input(k * nbInput,  traces=True)  # Input layer.
 
@@ -41,9 +41,9 @@ C6 = topology.Connection(source=F, target=Y, w=wFeed)  # Connection from X to Y.
 tabTensor = torch.full((Y.n, Y.n), 0.01)
 
 C2 = topology.Connection(source=Y, target=Y, w=torch.bernoulli(tabTensor)* torch.rand((Y.n, Y.n)))  # Connection from X to Y.
-tabTensor = torch.full((Y.n, Z.n), 0.1)
+tabTensor = torch.full((Y.n, Z.n), 0.5)
 C3 = topology.Connection(source=Y, target=Z, w=torch.bernoulli(tabTensor)* torch.rand((Y.n, Z.n)))
-tabTensor = torch.full((Z.n, Y.n), 0.1)
+tabTensor = torch.full((Z.n, Y.n), 0.5)
 C4 = topology.Connection(source=Z, target=Y, w= -torch.bernoulli(tabTensor) * torch.rand((Z.n, Y.n))) 
 tabTensor = torch.full((Z.n, Z.n), 0.01)
 C5 = topology.Connection(source=Z, target=Z, w= -  torch.bernoulli(tabTensor) * torch.rand((Z.n, Z.n)))  # Connection from X to Y.
@@ -83,10 +83,10 @@ network.add_monitor(monitor=M4, name='Z')
 # Create Poisson-distributed spike train inputs.
 #data = 15 * torch.rand(30)  # Generate random Poisson rates for 100 input neurons.
 #train = encoding.poisson(datum=data, time=251)  # Encode input as 5000ms Poisson spike trains.
-with open("./datasets/gaussianEncodedMackey2.pickle", "rb") as f:
+with open("./datasets/gaussianEncodedMackey.pickle", "rb") as f:
     dataset = pickle.load(f)
 
-with open("./datasets/formatedMackey2.pickle", "rb") as f:
+with open("./datasets/formatedMackey.pickle", "rb") as f:
     decoDataset = pickle.load(f)
 
 print(dataset[90][:100])

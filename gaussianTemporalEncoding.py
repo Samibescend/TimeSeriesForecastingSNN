@@ -21,7 +21,7 @@ def encoding(dataset, ymax, ymin, m, sca):
         for j in range(len(data)):
             if data[j] <= centers[i]:
                 proba = NormalDist(centers[i], deviation).cdf(data[j])
-                if (proba >= 0.3):
+                if (proba >= 0.2):
 
                     index = j + 10 - round(proba * 10) * 2
                     if index < len(data):
@@ -29,7 +29,7 @@ def encoding(dataset, ymax, ymin, m, sca):
             else:
                 tmpvalue = centers[i] - (data[j] - centers[i])
                 proba = NormalDist(centers[i], deviation).cdf(tmpvalue)
-                if (proba >= 0.3):
+                if (proba >= 0.2):
                     index = j + 10 - round(proba * 10) * 2
                     if index < len(data):
                         spikesTab[i][index] = 1   

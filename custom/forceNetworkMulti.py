@@ -7,6 +7,7 @@ from statistics import NormalDist
 import numpy.random as random
 import matplotlib.pyplot as plt
 import plotly
+from statsmodels.tsa.tsatools import detrend
 import plotly.graph_objs as go
 
 
@@ -40,8 +41,8 @@ def R2Calculation(deco, pred):
     totalError = 0
     totalMoyenne = 0
     totalMoyenneError = 0
-    for i in range(len(pred) - 15):
-        totalError += (deco[i] - pred[i + 15]) ** 2
+    for i in range(len(pred)):
+        totalError += (deco[i] - pred[i]) ** 2
         totalMoyenne += deco[i]
     totalMoyenne /= len(deco)
 
@@ -245,7 +246,7 @@ class forceNetworkMulti(Network):
                             traces[t][i] += incr
                             #traces[t][i] =  incr
                     i += 1
-                """for s in self.monitors["Z"].recording["s"][t][0][0]:
+                """ for s in self.monitors["Z"].recording["s"][t][0][0]:
                     traces[t][i] = np.exp((-1 *((t - baseTrace[i])) / traceDecay))
                     if baseTrace[i] == 1:
                         if s.item() == True:
@@ -257,7 +258,7 @@ class forceNetworkMulti(Network):
                         traces[t][i] = np.exp((-1 *((t - baseTrace[i])) / traceDecay))
                         if s.item() == True:
                             baseTrace[i] = t
-                            traces[t][i] = incr/4
+                            traces[t][i] = incr
                             #traces[t][i] =  incr
                     i += 1"""
                 # print(traces[t])
@@ -301,6 +302,16 @@ class forceNetworkMulti(Network):
         for c in self.connections:
             self.connections[c].normalize()
         print("fin")
+
+
+
+
+
+
+
+
+
+
         t = np.arange(0.0, time, 1)
         s = plotValues
         fig, ax = plt.subplots()
@@ -324,9 +335,27 @@ class forceNetworkMulti(Network):
         ax.plot(t, s)
         fig.savefig("plotNormComparison.png")
 
+
+        avgY =  []
+        for i in range(5 , len(s) - 5):
+            avgY.append(sum(s[i - 5: i + 5]) / 10)
+
         trace = go.Scatter(
             x = t ,
             y = s,
+            line = go.Line(
+            color = "blue"
+            )
+
+        )
+
+        
+        trace3 = go.Scatter(
+            x = t ,
+            y = avgY,
+            line = go.Line(
+            color = "green"
+            )
         )
 
         trace2 = go.Scatter(
@@ -337,9 +366,16 @@ class forceNetworkMulti(Network):
             dash = "dash"
             )
         )
-        data = go.Data([trace, trace2])
-        plotly.offline.plot(data, filename='./test.html')
 
+        data = go.Data([trace2, trace3])
+        plotly.offline.plot(data, filename='./test2.html')
+
+        data = go.Data([trace2, trace])
+        plotly.offline.plot(data, filename='./test.html')
+        
         print("MSE DE FIN= " + str(MSECalculation(s2, s)))
         print("R2 DE FIN = " + str(R2Calculation(s2, s)) )
-
+        print(len(avgY))
+        print(len(s2))
+        print("MSE average =" + str(MSECalculation(avgY, s2[5: len(s2) - 5])))
+        print("R2 average =" + str(R2Calculation(avgY, s2[5: len(s2) - 5])))
